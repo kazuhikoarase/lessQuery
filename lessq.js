@@ -13,6 +13,8 @@
 
 var lessQuery = function() {
 
+  var debug = location.hash == '#debug';
+
   var cacheIdKey = '.lessqCacheId';
   var cacheIdSeq = 0;
   var cache = {};
@@ -21,31 +23,52 @@ var lessQuery = function() {
     var cacheId = elm[cacheIdKey];
     if (typeof cacheId == 'undefined') {
       elm[cacheIdKey] = cacheId = cacheIdSeq++;
-      cache[cacheId] = {};
+      cache[cacheId] = debug? { e : elm } : {};
     }
     return cache[cacheId];
   };
 
+  var hasCache = function(elm) {
+    return typeof elm[cacheIdKey] != 'undefined';
+  };
+
+  if (debug) {
+    var lastKeys = {};
+    var showCacheCount = function() {
+      var cnt = 0;
+      var keys = {};
+      for (var k in cache) {
+        cnt += 1;
+        if (!lastKeys[k]) {
+          console.log(cache[k]);
+        }
+        keys[k] = true;
+      }
+      lastKeys = keys;
+      console.log('cacheCount:' + cnt);
+      window.setTimeout(showCacheCount, 5000);
+    };
+    showCacheCount();
+  }
+
   var removeCache = function(elm) {
 
-    if (typeof elm[cacheIdKey] == 'undefined') {
-      // not attached.
-      return;
-    }
+    if (typeof elm[cacheIdKey] != 'undefined') {
 
-    // remove all listeners
-    var cacheId = elm[cacheIdKey];
-    var listenerMap = cache[cacheId].listenerMap;
-    for (var type in listenerMap) {
-      var listeners = listenerMap[type];
-      for (var i = 0; i < listeners.length; i += 1) {
-        elm.removeEventListener(type, listeners[i]);
+      // remove all listeners
+      var cacheId = elm[cacheIdKey];
+      var listenerMap = cache[cacheId].listenerMap;
+      for (var type in listenerMap) {
+        var listeners = listenerMap[type];
+        for (var i = 0; i < listeners.length; i += 1) {
+          elm.removeEventListener(type, listeners[i]);
+        }
       }
-    }
 
-    // delete refs
-    delete elm[cacheIdKey];
-    delete cache[cacheId];
+      // delete refs
+      delete elm[cacheIdKey];
+      delete cache[cacheId];
+    }
 
     while (elm.firstChild) {
       removeCache(elm.firstChild);
@@ -83,6 +106,7 @@ var lessQuery = function() {
   var trigger = function(elm, type, data) {
     var event = createEvent(type);
     for (;elm != null; elm = elm.parentNode) {
+      if (!hasCache(elm) ) { continue; }
       if (!getCache(elm).listenerMap) { continue; }
       if (!getCache(elm).listenerMap[type]) { continue; }
       var listeners = getCache(elm).listenerMap[type];
@@ -294,6 +318,15 @@ var lessQuery = function() {
         }
       }
       return lessQuery();
+    },
+    find : function(selector) {
+      var elms = [];
+      var childNodes = this.querySelectorAll(selector);
+      for (var i = 0; i < childNodes.length; i += 1) {
+        elms.push(childNodes.item(i) );
+      }
+      elms.__proto__ = fn;
+      return elms;
     },
     children : function(selector) {
       var elms = [];
