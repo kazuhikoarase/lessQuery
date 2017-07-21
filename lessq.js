@@ -244,13 +244,19 @@ var lessQuery = function() {
       return this;
     },
     on : function(type, listener) {
-      this.addEventListener(type, listener);
-      addEventListener(this, type, listener, true);
+      var types = type.split(/\s+/g);
+      for (var i = 0; i < types.length; i += 1) {
+        this.addEventListener(types[i], listener);
+        addEventListener(this, types[i], listener, true);
+      }
       return this;
     },
     off : function(type, listener) {
-      this.removeEventListener(type, listener);
-      addEventListener(this, type, listener, false);
+      var types = type.split(/\s+/g);
+      for (var i = 0; i < types.length; i += 1) {
+        this.removeEventListener(types[i], listener);
+        addEventListener(this, types[i], listener, false);
+      }
       return this;
     },
     trigger : function(type, data) {
@@ -295,6 +301,20 @@ var lessQuery = function() {
       }
       return this;
     },
+    insertBefore : function(elms) {
+      var elm = elms[0];
+      elm.parentNode.insertBefore(this, elm);
+      return this;
+    },
+    insertAfter : function(elms) {
+      var elm = elms[0];
+      if (elm.nextSibling) {
+        elm.parentNode.insertBefore(this, elm.nextSibling);
+      } else {
+        elm.parentNode.appendChild(this);
+      }
+      return this;
+    },
     remove : function() {
       if (this.parentNode) { this.parentNode.removeChild(this); }
       removeCache(this);
@@ -304,8 +324,6 @@ var lessQuery = function() {
       if (this.parentNode) { this.parentNode.removeChild(this); }
       return this;
     },
-    focus : function() { this.focus(); return this; },
-    select : function() { this.select(); return this; },
     parent : function() {
       return lessQuery(this.parentNode);
     },
@@ -337,6 +355,9 @@ var lessQuery = function() {
       elms.__proto__ = fn;
       return elms;
     },
+    clone : function() { return lessQuery(this.cloneNode(true) ); },
+    focus : function() { this.focus(); return this; },
+    select : function() { this.select(); return this; },
     scrollLeft : function() {
       if (arguments.length == 0) return this.scrollLeft;
       this.scrollLeft = arguments[0]; return this;
@@ -358,8 +379,8 @@ var lessQuery = function() {
         this.innerText = arguments[0]; return this;
       }
     },
-    width : function() { return this.offsetWidth || this.innerWidth; },
-    height : function() { return this.offsetHeight || this.innerHeight; },
+    width : function() { return this.offsetWidth || this.innerWidth || 0; },
+    height : function() { return this.offsetHeight || this.innerHeight || 0; },
     addClass : function(className) {
       addClass(this, className, true); return this;
     },
@@ -411,8 +432,6 @@ var lessQuery = function() {
       return lessQuery(document).on('DOMContentLoaded', target);
     }
 
-    var elms = [];
-
     if (!target) {
 
       // empty
@@ -420,25 +439,44 @@ var lessQuery = function() {
     } else if (typeof target == 'string') {
 
       if (target.charAt(0) == '<') {
+
+        // dom creation
         var doc = parser.parseFromString(
             '<div xmlns="http://www.w3.org/1999/xhtml">' + target + '</div>',
             'text/xml').firstChild;
+        var elms = [];
         while (doc.firstChild) {
           elms.push(doc.firstChild);
           doc.removeChild(doc.firstChild);
         }
+        elms.__proto__ = fn;
+        return elms;
 
       } else {
+
+        // query
         var childNodes = document.querySelectorAll(target);
+        var elms = [];
         for (var i = 0; i < childNodes.length; i += 1) {
           elms.push(childNodes.item(i) );
         }
+        elms.__proto__ = fn;
+        return elms;
       }
 
     } else if (typeof target == 'object') {
-      elms.push(target);
+      if (target.__proto__ == fn) {
+        return target;
+      } else {
+        var elms = [];
+        elms.push(target);
+        elms.__proto__ = fn;
+        return elms;
+      }
     }
 
+    // default (empty)
+    var elms = [];
     elms.__proto__ = fn;
     return elms;
   };
