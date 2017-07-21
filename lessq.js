@@ -103,8 +103,14 @@ var lessQuery = function() {
     return true;
   };
 
+  var CustomEvent = {
+    preventDefault : function() {},
+    stopPropagation : function() {},
+    stopImmediatePropagation : function() {}
+  };
+
   var trigger = function(elm, type, data) {
-    var event = createEvent(type);
+    var event = { type : type, target : elm, __proto__ : CustomEvent };
     for (;elm != null; elm = elm.parentNode) {
       if (!hasCache(elm) ) { continue; }
       if (!getCache(elm).listenerMap) { continue; }
@@ -188,18 +194,6 @@ var lessQuery = function() {
     }
     return false;
   };
-
-  var createEvent = function() {
-    return typeof window.CustomEvent == 'function'?
-      function(type) { // non IE
-        return new window.CustomEvent(type);
-      } :
-      function(type) { // IE
-        var event = document.createEvent('CustomEvent');
-        event.initCustomEvent(type, false, false, null);
-        return event;
-      };
-  }();
 
   // per element functions.
   var fn = {
