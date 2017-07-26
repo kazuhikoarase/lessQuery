@@ -31,7 +31,7 @@ $(function() {
   $ul.prepend($2);
   $4.insertAfter($3);
   $1.insertBefore($2);
-  $('BODY').append($ul);
+  $('BODY').append('Test').append('<br/>').append($ul);
   var t2 = +new Date();
   var arr = [$1, $2, $3, $4];
   $.each(arr, function(i, $e) {
@@ -64,6 +64,40 @@ $(function() {
       children().css('pointer-events', 'none');
   }).trigger('mouseout') );
 
+  $('BODY').append('<span>A</span>').
+    append('&#160;').
+    append('<span>B</span>').
+    append('&#160;&#160;&lt;&gt;&#160;&#160;').
+    append('<span>C</span>');
+
+  $2.parent().append($2.parent().children().last().clone() ).
+    append($2.parent().children().first().clone() );
+
+  assertEquals(1, $2.index() );
+  var $wh = $('<div></div>').css({
+    margin : '5px 6px 7px 8px', padding : '9px 10px 11px 12px',
+    borderStyle : 'solid',
+    borderColor : '#ff00ff',
+    borderWidth : '1px 2px 3px 4px',
+    width : '300px', height : '100px', overflow : 'scroll'
+  }).text('Width / Height Test').on('mousedown', function(event) {
+    console.log('which:' + event.which + '/' + event.offsetX);
+  });
+
+  $('BODY').append($wh);
+
+  assertEquals(342, $wh.outerWidth(true) );
+  assertEquals(328, $wh.outerWidth() );
+  assertEquals(322, $wh.innerWidth() );
+  assertEquals(300, $wh.width() );
+  assertEquals(136, $wh.outerHeight(true) );
+  assertEquals(124, $wh.outerHeight() );
+  assertEquals(120, $wh.innerHeight() );
+  assertEquals(100, $wh.height() );
+
+  //  getComputedStyle(document.getElementById('content'),null).
+//  getPropertyValue('border-left-width')
+  
   $(document.body).append($('<div></div>').css({
     backgroundColor: '#0099cc',
     width: '160px', height : '90px',
@@ -101,7 +135,7 @@ $(function() {
     // restore
     $(this).data('abc', { zz : backup })
 
-   }).data('abc', { zz : 'my data' }) );
+  }).data('abc', { zz : 'my data' }) );
 
   sw('end');
 });
