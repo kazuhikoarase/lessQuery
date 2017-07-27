@@ -180,7 +180,7 @@ var lessQuery = function() {
 
   var matches = function(elm, selector) {
     if (elm.nodeType != 1) {
-      return false
+      return false;
     } else if (!selector) {
       return true;
     }
@@ -241,8 +241,10 @@ var lessQuery = function() {
 
   var parseResponse = function() {
 
-    var contentType = this.getResponseHeader('content-type').
-      replace(/\s*;.+$/, '').toLowerCase();
+    var contentType = this.getResponseHeader('content-type');
+    if (contentType != null) {
+      contentType = contentType.replace(/\s*;.+$/, '').toLowerCase();
+    }
 
     if (contentType == 'text/xml' ||
           contentType == 'application/xml') {
@@ -281,7 +283,7 @@ var lessQuery = function() {
       contentType = false;
     }
 
-    var xhr = params.xhr || new window.XMLHttpRequest();
+    var xhr = params.xhr? params.xhr() : new window.XMLHttpRequest();
     xhr.open(method, params.url, params.async);
     if (contentType !== false) {
       xhr.setRequestHeader('Content-Type', contentType);
@@ -311,7 +313,8 @@ var lessQuery = function() {
     var $ = {
       done : function(callback) { done = callback; return $; },
       fail : function(callback) { fail = callback; return $; },
-      always : function(callback) { always = callback; return $; }
+      always : function(callback) { always = callback; return $; },
+      abort : function() { xhr.abort(); return $; }
     };
     return $;
   };
@@ -485,6 +488,7 @@ var lessQuery = function() {
     clone : function() { return $(this.cloneNode(true) ); },
     focus : function() { this.focus(); return this; },
     select : function() { this.select(); return this; },
+    submit : function() { this.submit(); return this; },
     scrollLeft : function() {
       if (arguments.length == 0) return this.scrollLeft;
       this.scrollLeft = arguments[0]; return this;

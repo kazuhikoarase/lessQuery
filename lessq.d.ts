@@ -16,6 +16,7 @@ interface LessQueryStatic {
   grep(list : any[], accept : (item : any) => boolean) : any[];
   data(target : Element, k : string) : any;
   data(target : Element, k : string, v : any) : LessQuery;
+  ajax(params : LessQueryXHRParams) : LessQueryXHR;
   (target : string|Window|Element|Document) : LessQuery;
 }
 
@@ -87,6 +88,7 @@ interface LessQuery extends Array<any> {
   // etc.
   focus() : LessQuery;
   select() : LessQuery;
+  submit() : LessQuery;
 }
 
 interface LessQueryEventObject {
@@ -108,7 +110,26 @@ interface LessQueryEventObject {
   stopImmediatePropagation() : void;
 }
 
+interface LessQueryXHRParams {
+  url : string;
+  method? : string;
+  contentType? : string|boolean;
+  data? : any;
+  cache? : boolean;
+  processData? : boolean;
+  async? : boolean;
+  xhr? : () => XMLHttpRequest;
+}
+
+interface LessQueryXHR {
+  done(callback : (data : any) => void) : LessQueryXHR;
+  fail(callback : () => void) : LessQueryXHR;
+  always(callback : () => void) : LessQueryXHR;
+  abort() : LessQueryXHR;
+}
+
 // glue
 declare type JQuery = LessQuery;
 declare type JQueryEventObject = LessQueryEventObject;
+declare type JQueryXHR = LessQueryXHR;
 declare var $ : LessQueryStatic;
