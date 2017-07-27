@@ -21,7 +21,13 @@ $(function() {
       throw 'expected ' + expected + ' but ' + actual;
     }
   }
-  
+
+  assertEquals(0, $().length);
+  assertEquals(0, $(null).length);
+  assertEquals(0, $({}.a).length);
+  assertEquals(0, $(false).length);
+  assertEquals(0, $(0).length);
+
   var $ul = $('<ul></ul>');
   var $1 = $('<li><input type="checkbox"/>1</li>');
   var $2 = $('<li><input type="checkbox"/>2</li>');

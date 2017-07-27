@@ -604,13 +604,9 @@ var lessQuery = function() {
   var $ = function(target) {
 
     if (typeof target == 'function') {
+
       // ready
       return $(document).on('DOMContentLoaded', target);
-    }
-
-    if (!target) {
-
-      // empty
 
     } else if (typeof target == 'string') {
 
@@ -631,7 +627,8 @@ var lessQuery = function() {
         return elms;
       }
 
-    } else if (typeof target == 'object') {
+    } else if (typeof target == 'object' && target != null) {
+
       if (target.__proto__ == fn) {
         return target;
       } else {
@@ -640,12 +637,13 @@ var lessQuery = function() {
         elms.__proto__ = fn;
         return elms;
       }
-    }
 
-    // default (empty)
-    var elms = [];
-    elms.__proto__ = fn;
-    return elms;
+    } else {
+
+      var elms = [];
+      elms.__proto__ = fn;
+      return elms;
+    }
   };
 
   return extend($, {
