@@ -130,13 +130,13 @@ $(function() {
     var p = { x : event.pageX, y : event.pageY };
 
     assertEquals('my data', $(this).data('abc').zz);
-    assertEquals('my data', $.data($(this)[0], 'abc').zz);
+    assertEquals('my data', $.data(this, 'abc').zz);
 
     var backup = $(this).data('abc').zz;
 
     $(this).data('abc', { zz : 'MyData' })
     assertEquals('MyData', $(this).data('abc').zz);
-    assertEquals('MyData', $.data($(this)[0], 'abc').zz);
+    assertEquals('MyData', $.data(this, 'abc').zz);
 
     // restore
     $(this).data('abc', { zz : backup })
