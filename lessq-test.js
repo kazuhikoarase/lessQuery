@@ -1,3 +1,5 @@
+import $ from './dist/lessq';
+
 $(function() {
 
   var log = function(msg) {
