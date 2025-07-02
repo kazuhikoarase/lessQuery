@@ -24,19 +24,19 @@ interface LessQuery extends Array<any> {
 
   attr(k : string) : string;
   attr(k : string, v : string|number) : LessQuery;
-  attr(attr : Object) : LessQuery;
+  attr(attr : { [k : string] : string|number }) : LessQuery;
 
   prop(k : string) : any;
-  prop(k : string, v : any) : LessQuery;
-  prop(prop : Object) : LessQuery;
+  prop(k : string, v : string|number|boolean) : LessQuery;
+  prop(prop : { [k : string] : string|number|boolean }) : LessQuery;
 
   css(k : string) : string;
   css(k : string, v : string|number) : LessQuery;
-  css(css : Object) : LessQuery;
+  css(css : any) : LessQuery;
 
   data(k : string) : any;
   data(k : string, v : any) : LessQuery;
-  data(data : Object) : LessQuery;
+  data(data : { [k : string] : any }) : LessQuery;
 
   each(callback : (index? : number) => void) : LessQuery;
 
@@ -59,19 +59,17 @@ interface LessQuery extends Array<any> {
   scrollLeft(scrollLeft : number) : LessQuery;
   scrollTop() : number;
   scrollTop(scrollTop : number) : LessQuery;
-
   addClass(className : string) : LessQuery;
   removeClass(className : string) : LessQuery;
   hasClass(className : string) : boolean;
-
   // DOM
   append(child : LessQuery|string) : LessQuery;
   prepend(child : LessQuery|string) : LessQuery;
   remove() : LessQuery;
+  detach() : LessQuery;
   parent() : LessQuery;
   closest(selector : string) : LessQuery;
-  children() : LessQuery;
-  children(selector : string) : LessQuery;
+  children(selector? : string) : LessQuery;
   find(selector : string) : LessQuery;
   insertBefore(target : LessQuery) : LessQuery;
   insertAfter(target : LessQuery) : LessQuery;
@@ -104,7 +102,7 @@ interface LessQueryEventObject {
   altKey : boolean;
   metaKey : boolean;
   which : number;
-  originalEvent? : Event
+  originalEvent? : Event;
   preventDefault() : void;
   stopPropagation() : void;
   stopImmediatePropagation() : void;
@@ -127,9 +125,3 @@ interface LessQueryXHR {
   always(callback : () => void) : LessQueryXHR;
   abort() : LessQueryXHR;
 }
-
-// glue
-declare type JQuery = LessQuery;
-declare type JQueryEventObject = LessQueryEventObject;
-declare type JQueryXHR = LessQueryXHR;
-declare var $ : LessQueryStatic;
