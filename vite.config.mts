@@ -11,7 +11,10 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
     lib: {
-      entry: resolve(__dirname, 'src/lessq.ts'),
+      entry: [
+        resolve(__dirname, 'src/lessq.ts'),
+        resolve(__dirname, 'src/minq.ts')
+      ],
       name: 'lessq',
       fileName: (format, entryName) =>
         format == 'cjs'? `${entryName}.js` :

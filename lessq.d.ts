@@ -8,20 +8,7 @@
 // Licensed under the MIT license:
 //  http://www.opensource.org/licenses/mit-license.php
 //
-
-interface LessQueryStatic {
-  extend<T>(target : T, opts : Object) : T;
-  each(list : any[], callback : (index : number, v : any) => void) : LessQueryStatic;
-  each(map : { [k : string] : any }, callback : (k : string, v : any) => void) : LessQueryStatic;
-  grep(list : any[], accept : (item : any) => boolean) : any[];
-  data(target : Element, k : string) : any;
-  data(target : Element, k : string, v : any) : LessQuery;
-  ajax(params : LessQueryXHRParams) : LessQueryXHR;
-  (target : string|Window|Element|Document) : LessQuery;
-}
-
-interface LessQuery extends Array<any> {
-
+type LessQueryFn = {
   attr(k : string) : string;
   attr(k : string, v : string|number) : LessQuery;
   attr(attr : { [k : string] : string|number }) : LessQuery;
@@ -87,6 +74,20 @@ interface LessQuery extends Array<any> {
   focus() : LessQuery;
   select() : LessQuery;
   submit() : LessQuery;
+}
+
+type LessQuery = LessQueryFn & any[];
+
+type LessQueryStatic = {
+  fn : LessQueryFn;
+  extend<S,T, U extends S & T>(o1 : S, o2 : T) : U;
+  each(list : any[], callback : (index : number, v : any) => void) : LessQueryStatic;
+  each(map : { [k : string] : any }, callback : (k : string, v : any) => void) : LessQueryStatic;
+  grep(list : any[], accept : (item : any) => boolean) : any[];
+  data(target : Element, k : string) : any;
+  data(target : Element, k : string, v : any) : LessQuery;
+  ajax(params : LessQueryXHRParams) : LessQueryXHR;
+  (target : string|Window|Element|Document) : LessQuery;
 }
 
 interface LessQueryEventObject {

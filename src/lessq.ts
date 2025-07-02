@@ -9,13 +9,15 @@
 //  http://www.opensource.org/licenses/mit-license.php
 //
 
+/// <reference path="../lessq.d.ts" />
+
 const debug = location.hash == '#debug';
 
 const cacheIdKey = '.lessqCacheId';
 let cacheIdSeq = 0;
-const cache : any = {};
+const cache : { [key : number] :any } = {};
 
-const getCache = function(elm : any) {
+const getCache = function(elm : { [ key : string ] : number }) {
   let cacheId = elm[cacheIdKey];
   if (typeof cacheId == 'undefined') {
     elm[cacheIdKey] = cacheId = cacheIdSeq++;
@@ -24,15 +26,17 @@ const getCache = function(elm : any) {
   return cache[cacheId];
 };
 
-const hasCache = function(elm : any) {
+type CacheElement = any;//{ [ key : string ] : number } & Element;
+
+const hasCache = function(elm : CacheElement) {
   return typeof elm[cacheIdKey] != 'undefined';
 };
 
 if (debug) {
-  let lastKeys : any = {};
+  let lastKeys : { [k : string] : boolean } = {};
   const showCacheCount = function() {
     let cnt = 0;
-    let keys : any = {};
+    const keys : { [k : string]: boolean } = {};
     for (let k in cache) {
       cnt += 1;
       if (!lastKeys[k]) {
@@ -47,7 +51,7 @@ if (debug) {
   showCacheCount();
 }
 
-const removeCache = function(elm : any) {
+const removeCache = function(elm : CacheElement) {
 
   if (typeof elm[cacheIdKey] != 'undefined') {
 
@@ -72,12 +76,12 @@ const removeCache = function(elm : any) {
   }
 };
 
-const getData = function(elm : any) {
+const getData = function(elm : CacheElement) {
   if (!getCache(elm).data) { getCache(elm).data = {}; }
   return getCache(elm).data;
 };
 
-const getListeners = function(elm : any, type : string) {
+const getListeners = function(elm : CacheElement, type : string) {
   if (!getCache(elm).listenerMap) {
     getCache(elm).listenerMap = {}; }
   if (!getCache(elm).listenerMap[type]) {
@@ -86,7 +90,7 @@ const getListeners = function(elm : any, type : string) {
 };
 
 // add / remove event listener.
-const addEventListener = function(elm : any, type : string, listener : () => void, add : boolean) {
+const addEventListener = function(elm : CacheElement, type : string, listener : any, add : boolean) {
   const listeners = getListeners(elm, type);
   const newListeners = [];
   for (let i = 0; i < listeners.length; i += 1) {
@@ -105,7 +109,7 @@ const CustomEvent : any = {
   stopImmediatePropagation : function() { this._sIp = true; }
 };
 
-const trigger = function(elm : any, type : string, data : any) {
+const trigger = function(elm : CacheElement, type : string, data : any) {
   const event = { type : type, target : elm, currentTarget : null,
       _pD : false, _sP : false, _sIp : false, __proto__ : CustomEvent };
   for (let e = elm; e != null; e = e.parentNode) {
@@ -122,24 +126,21 @@ const trigger = function(elm : any, type : string, data : any) {
   }
 };
 
-const data = function(elm : any, kv : any) {
-  if (arguments.length == 2) {
+const data = function(elm : any, kv : string|any, v? : any) {
+  if (v === undefined) {
     if (typeof kv == 'string') return getData(elm)[kv];
     for (let k in kv) { getData(elm)[k] = kv[k]; }
-  } else if (arguments.length == 3) {
-    getData(elm)[kv] = arguments[2];
+  } else {
+    getData(elm)[kv] = v;
   }
   return elm;
 };
 
-//type Extend<S, T extends S> = (o1 : S, o2: T) => T;
-
-const extend = function<S,T, U extends S & T>(o1 : S, o2 : T) : U {
-  const _o1 : any = o1;
-  for (let k in o2) { _o1[k] = o2[k]; } return _o1;
+const extend = function(o1 : any, o2 : any) {
+  for (let k in o2) { o1[k] = o2[k]; } return o1;
 };
 
-const each = function(it : any, callback : (i : number | string, o : any) => void) {
+const each = function(it : any, callback : (k : any, v : any) => void) {
   if (typeof it.splice == 'function') {
     for (let i = 0; i < it.length; i += 1) { callback(i, it[i]); }
   } else {
@@ -147,7 +148,7 @@ const each = function(it : any, callback : (i : number | string, o : any) => voi
   }
 };
 
-const grep = function(list : any[], accept : (o : any) => boolean) {
+const grep = function(list : any[], accept : (item : any) => boolean) {
   const newList = [];
   for (let i = 0; i < list.length; i += 1) {
     const item = list[i];
@@ -158,7 +159,7 @@ const grep = function(list : any[], accept : (o : any) => boolean) {
   return newList;
 };
 
-const addClass = function(elm : any, className : string, add? : boolean) {
+const addClass = function(elm : HTMLElement, className : string, add? : boolean) {
   const classes = (elm.getAttribute('class') || '').split(/\s+/g);
   let newClasses = '';
   for (let i = 0; i < classes.length; i+= 1) {
@@ -169,7 +170,7 @@ const addClass = function(elm : any, className : string, add? : boolean) {
   elm.setAttribute('class', newClasses);
 };
 
-const hasClass = function(elm : any, className : string) {
+const hasClass = function(elm: HTMLElement, className : string) {
   const classes = (elm.getAttribute('class') || '').split(/\s+/g);
   for (let i = 0; i < classes.length; i+= 1) {
     if (classes[i] == className) { return true; }
@@ -177,7 +178,7 @@ const hasClass = function(elm : any, className : string) {
   return false;
 };
 
-const matches = function(elm : any, selector : string) {
+const matches = function(elm: HTMLElement, selector : string) {
   if (elm.nodeType != 1) {
     return false;
   } else if (!selector) {
@@ -203,10 +204,10 @@ const matches = function(elm : any, selector : string) {
 
 const parser = new window.DOMParser();
 
-const html = function(html : string) {
-  const doc : any = parser.parseFromString(
+const html = function(html? : string) {
+  const doc = parser.parseFromString(
       '<div xmlns="http://www.w3.org/1999/xhtml">' + html + '</div>',
-      'text/xml').firstChild;
+      'text/xml').firstChild!;
   const elms : any = [];
   while (doc.firstChild) {
     elms.push(doc.firstChild);
@@ -240,7 +241,7 @@ const buildQuery = function(data : any) {
 
 const parseResponse = function(this : any) {
 
-    let contentType = this.getResponseHeader('content-type');
+  let contentType = this.getResponseHeader('content-type');
   if (contentType != null) {
     contentType = contentType.replace(/\s*;.+$/, '').toLowerCase();
   }
@@ -256,7 +257,7 @@ const parseResponse = function(this : any) {
   }
 };
 
-const ajax = function(params : any) {
+const ajax = function(params : LessQueryXHRParams) {
 
   params = extend({
     url: '',
@@ -272,7 +273,7 @@ const ajax = function(params : any) {
     throw 'not supported.';
   }
 
-  const method = params.method.toUpperCase();
+  const method = params.method!.toUpperCase();
   let data = null;
   let contentType = params.contentType;
   if (method == 'POST' || method == 'PUT') {
@@ -284,7 +285,7 @@ const ajax = function(params : any) {
 
   const xhr = params.xhr? params.xhr() : new window.XMLHttpRequest();
   xhr.open(method, params.url, params.async);
-  if (contentType !== false) {
+  if (typeof contentType === 'string') {
     xhr.setRequestHeader('Content-Type', contentType);
   }
   xhr.onreadystatechange = function() {
@@ -310,17 +311,19 @@ const ajax = function(params : any) {
   let always = function() {};
 
   const $ = {
-    done : function(callback : any) { done = callback; return $; },
-    fail : function(callback : any) { fail = callback; return $; },
-    always : function(callback : any) { always = callback; return $; },
+    done : function(callback : (data : any) => void) { done = callback; return $; },
+    fail : function(callback : () => void) { fail = callback; return $; },
+    always : function(callback : () => void) { always = callback; return $; },
     abort : function() { xhr.abort(); return $; }
   };
   return $;
 };
 
+type FnType = HTMLElement & { [k : string] : any };
+
 // 1. for single element
 let fn = {
-  attr : function(this : any, kv : any) {
+  attr : function(this : FnType, kv : string|any) {
     if (arguments.length == 1) {
       if (typeof kv == 'string') return this.getAttribute(kv);
       for (let k in kv) { this.setAttribute(k, kv[k]); }
@@ -329,7 +332,7 @@ let fn = {
     }
     return this;
   },
-  prop : function(this : any, kv : any) {
+  prop : function(this : FnType, kv : string|any) {
     if (arguments.length == 1) {
       if (typeof kv == 'string') return this[kv];
       for (let k in kv) { this[k] = kv[k]; }
@@ -338,7 +341,7 @@ let fn = {
     }
     return this;
   },
-  css : function(this : any, kv : any) {
+  css : function(this : any, kv : string|any) {
     if (arguments.length == 1) {
       if (typeof kv == 'string') return this.style[kv];
       for (let k in kv) { this.style[k] = kv[k]; }
@@ -347,14 +350,14 @@ let fn = {
     }
     return this;
   },
-  data : function(this : any, _kv : any) {
+  data : function() {
     const args : any = [ this ];
     for (let i = 0; i < arguments.length; i += 1) {
       args.push(arguments[i]);
     }; 
     return data.apply(null, args);
   },
-  val : function(this : any) {
+  val : function(this : any) : string|any {
     if (arguments.length == 0) {
       return this.value || '';
     } else if (arguments.length == 1) {
@@ -404,7 +407,7 @@ let fn = {
     }
     return off;
   },
-  append : function(this : HTMLElement, elms : any) {
+  append : function(this : any, elms : any) {
     if (typeof elms == 'string') {
       elms = html(elms);
     }
@@ -413,7 +416,7 @@ let fn = {
     }
     return this;
   },
-  prepend : function(this : HTMLElement, elms : NodeList) {
+  prepend : function(this : any, elms : any) {
     if (typeof elms == 'string') {
       elms = html(elms);
     }
@@ -426,41 +429,41 @@ let fn = {
     }
     return this;
   },
-  insertBefore : function(this : HTMLElement, elms : NodeList) {
+  insertBefore : function(elms : any) {
     const elm = elms[0];
-    elm.parentNode!.insertBefore(this, elm);
+    elm.parentNode.insertBefore(this, elm);
     return this;
   },
-  insertAfter : function(this : HTMLElement, elms : NodeList) {
+  insertAfter : function(elms : any) {
     const elm = elms[0];
     if (elm.nextSibling) {
-      elm.parentNode!.insertBefore(this, elm.nextSibling);
+      elm.parentNode.insertBefore(this, elm.nextSibling);
     } else {
-      elm.parentNode!.appendChild(this);
+      elm.parentNode.appendChild(this);
     }
     return this;
   },
-  remove : function(this : HTMLElement) {
+  remove : function(this : any) {
     if (this.parentNode) { this.parentNode.removeChild(this); }
     removeCache(this);
     return this;
   },
-  detach : function(this : HTMLElement) {
+  detach : function(this : any) {
     if (this.parentNode) { this.parentNode.removeChild(this); }
     return this;
   },
-  parent : function(this : HTMLElement) {
+  parent : function(this : any) {
     return $(this.parentNode);
   },
-  closest : function(this : HTMLElement, selector : string) {
-    for (let e : Node = this; e != null; e = e.parentNode!) {
+  closest : function(this : any, selector : string) {
+    for (let e = this; e != null; e = e.parentNode) {
       if (matches(e, selector) ) {
         return $(e);
       }
     }
     return $();
   },
-  find : function(this : HTMLElement, selector : string) {
+  find : function(this : any, selector : string) {
     const elms : any = [];
     const childNodes = this.querySelectorAll(selector);
     for (let i = 0; i < childNodes.length; i += 1) {
@@ -469,7 +472,7 @@ let fn = {
     elms.__proto__ = fn;
     return elms;
   },
-  children : function(this : HTMLElement, selector : string) {
+  children : function(this : any, selector : string) {
     const elms : any = [];
     const childNodes = this.childNodes;
     for (let i = 0; i < childNodes.length; i += 1) {
@@ -480,11 +483,11 @@ let fn = {
     elms.__proto__ = fn;
     return elms;
   },
-  index : function(selector : string) {
+  index : function(selector? : string) {
     return Array.prototype.indexOf.call(
         $(this).parent().children(selector), this);
   },
-  clone : function(this : HTMLElement) { return $(this.cloneNode(true) ); },
+  clone : function(this : any) { return $(this.cloneNode(true) ); },
   focus : function() { this.focus(); return this; },
   select : function() { this.select(); return this; },
   submit : function() { this.submit(); return this; },
@@ -496,11 +499,11 @@ let fn = {
     if (arguments.length == 0) return this.scrollTop;
     this.scrollTop = arguments[0]; return this;
   },
-  html : function(this : HTMLElement) {
+  html : function(this : any) {
     if (arguments.length == 0) return this.innerHTML;
     this.innerHTML = arguments[0]; return this;
   },
-  text : function(this : HTMLElement) {
+  text : function(this : any) {
     if (typeof this.textContent != 'undefined') {
       if (arguments.length == 0) return this.textContent;
       this.textContent = arguments[0]; return this;
@@ -509,7 +512,7 @@ let fn = {
       this.innerText = arguments[0]; return this;
     }
   },
-  outerWidth : function(this : HTMLElement, margin? : boolean) {
+  outerWidth : function(this : any, margin? : boolean) {
     const w = this.offsetWidth;
     if (margin) {
       const cs = window.getComputedStyle(this, null);
@@ -517,24 +520,19 @@ let fn = {
     }
     return w;
   },
-  innerWidth : function(this : HTMLElement) {
+  innerWidth : function(this : any) {
     const cs = window.getComputedStyle(this, null);
     return this.offsetWidth -
       pxToNum(cs.borderLeftWidth) - pxToNum(cs.borderRightWidth);
   },
-  width : function(this : HTMLElement | Window) {
-    if (this == window) {
-      return this.innerWidth;
-    } else if (this instanceof HTMLElement) {
-      const cs = window.getComputedStyle(this, null);
-      return this.offsetWidth -
-        pxToNum(cs.borderLeftWidth) - pxToNum(cs.borderRightWidth) -
-        pxToNum(cs.paddingLeft) - pxToNum(cs.paddingRight);
-    } else {
-      throw this;
-    }
+  width : function(this : any) {
+    if (this == window) return this.innerWidth;
+    const cs = window.getComputedStyle(this, null);
+    return this.offsetWidth -
+      pxToNum(cs.borderLeftWidth) - pxToNum(cs.borderRightWidth) -
+      pxToNum(cs.paddingLeft) - pxToNum(cs.paddingRight);
   },
-  outerHeight : function(this : HTMLElement, margin? : boolean) {
+  outerHeight : function(this : any, margin? : boolean) {
     const h = this.offsetHeight;
     if (margin) {
       const cs = window.getComputedStyle(this, null);
@@ -542,38 +540,33 @@ let fn = {
     }
     return h;
   },
-  innerHeight : function(this : HTMLElement) {
+  innerHeight : function(this : any) {
     const cs = window.getComputedStyle(this, null);
     return this.offsetHeight -
       pxToNum(cs.borderTopWidth) - pxToNum(cs.borderBottomWidth);
   },
-  height : function(this : HTMLElement | Window) {
-    if (this == window) {
-      return this.innerHeight;
-    } else if (this instanceof HTMLElement) {
-      const cs = window.getComputedStyle(this, null);
-      return this.offsetHeight -
-        pxToNum(cs.borderTopWidth) - pxToNum(cs.borderBottomWidth) -
-        pxToNum(cs.paddingTop) - pxToNum(cs.paddingBottom);
-    } else {
-      throw this;
-    }
+  height : function(this : any) {
+    if (this == window) return this.innerHeight;
+    const cs = window.getComputedStyle(this, null);
+    return this.offsetHeight -
+      pxToNum(cs.borderTopWidth) - pxToNum(cs.borderBottomWidth) -
+      pxToNum(cs.paddingTop) - pxToNum(cs.paddingBottom);
   },
-  addClass : function(className : string) {
+  addClass : function(this : any, className : string) {
     addClass(this, className, true); return this;
   },
-  removeClass : function(className : string) {
+  removeClass : function(this : any, className : string) {
     addClass(this, className, false); return this;
   },
-  hasClass : function(className : string) {
+  hasClass : function(this : any, className : string) {
     return hasClass(this, className);
   }
 };
 
 // 2. to array
-each(fn, function(name, func) {
-  const _fn : any = fn;
-  _fn[name] = function() {
+const fnRef : any = fn;
+each(fnRef, function(name, func) {
+  fnRef[name] = function() {
     let newRet : any = null;
     for (let i = 0; i < this.length; i += 1) {
       const elm = this[i];
@@ -597,21 +590,21 @@ each(fn, function(name, func) {
 
 // 3. for array
 fn = extend(fn, {
-  each : function(this : any[], callback : (i : number) => void) {
+  each : function(callback : (i : number) => any) {
     for (let i = 0; i < this.length; i += 1) {
       callback.call(this[i], i);
     }
     return this;
   },
-  first : function(this : any[]) {
+  first : function() {
     return $(this.length > 0? this[0] : null);
   },
-  last : function(this : any[]) {
+  last : function() {
     return $(this.length > 0? this[this.length - 1] : null);
   }
 });
 
-const $ = function(target? : any) : any {
+const $ : any = function(target? : any) {
 
   if (typeof target == 'function') {
 
@@ -656,8 +649,6 @@ const $ = function(target? : any) : any {
   }
 };
 
-const lessQuery = extend($, {
-  fn : fn, extend : extend, each : each, grep : grep, data : data, ajax : ajax
-});
+const lessQuery : LessQueryStatic = extend($, { fn , extend , each , grep , data, ajax });
 
 export default lessQuery;

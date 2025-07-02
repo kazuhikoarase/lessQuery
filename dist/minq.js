@@ -1,0 +1,2 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const i=function(n,t){const e=n;for(let r in t)e[r]=t[r];return e},s=function(n,t){for(let e in n)t(e,n[e])},o={each:function(n){for(let t=0;t<this.length;t+=1)n.call(this[t],t);return this}},c=o;s(c,function(n,t){n!="each"&&(c[n]=function(){for(let e=0;e<this.length;e+=1)t.apply(this[e],arguments);return this})});const u=function(n){const t=[];return t.__proto__=o,t},f=i(u,{fn:o,extend:i,each:s});exports.minQuery=f;
+//# sourceMappingURL=minq.js.map

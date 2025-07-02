@@ -1,22 +1,23 @@
-const b = location.hash == "#debug", a = ".lessqCacheId";
-let H = 0;
-const d = {}, f = function(t) {
+const x = location.hash == "#debug", a = ".lessqCacheId";
+let A = 0;
+const d = {}, l = function(t) {
   let e = t[a];
-  return typeof e > "u" && (t[a] = e = H++, d[e] = b ? { e: t } : {}), d[e];
-}, W = function(t) {
+  return typeof e > "u" && (t[a] = e = A++, d[e] = x ? { e: t } : {}), d[e];
+}, R = function(t) {
   return typeof t[a] < "u";
 };
-if (b) {
+if (x) {
   let t = {};
   const e = function() {
-    let n = 0, i = {};
+    let n = 0;
+    const i = {};
     for (let s in d)
       n += 1, t[s] || console.log(d[s]), i[s] = !0;
     t = i, console.log("cacheCount:" + n), window.setTimeout(e, 5e3);
   };
   e();
 }
-const x = function(t) {
+const L = function(t) {
   if (typeof t[a] < "u") {
     const e = t[a], n = d[e].listenerMap;
     for (let i in n) {
@@ -27,17 +28,17 @@ const x = function(t) {
     delete t[a], delete d[e];
   }
   for (; t.firstChild; )
-    x(t.firstChild), t.removeChild(t.firstChild);
+    L(t.firstChild), t.removeChild(t.firstChild);
 }, w = function(t) {
-  return f(t).data || (f(t).data = {}), f(t).data;
-}, A = function(t, e) {
-  return f(t).listenerMap || (f(t).listenerMap = {}), f(t).listenerMap[e] || (f(t).listenerMap[e] = []), f(t).listenerMap[e];
-}, m = function(t, e, n, i) {
-  const s = A(t, e), r = [];
-  for (let o = 0; o < s.length; o += 1)
-    s[o] != n && r.push(s[o]);
-  return i && r.push(n), f(t).listenerMap[e] = r, !0;
-}, R = {
+  return l(t).data || (l(t).data = {}), l(t).data;
+}, H = function(t, e) {
+  return l(t).listenerMap || (l(t).listenerMap = {}), l(t).listenerMap[e] || (l(t).listenerMap[e] = []), l(t).listenerMap[e];
+}, C = function(t, e, n, i) {
+  const s = H(t, e), r = [];
+  for (let f = 0; f < s.length; f += 1)
+    s[f] != n && r.push(s[f]);
+  return i && r.push(n), l(t).listenerMap[e] = r, !0;
+}, I = {
   preventDefault: function() {
     this._pD = !0;
   },
@@ -47,7 +48,7 @@ const x = function(t) {
   stopImmediatePropagation: function() {
     this._sIp = !0;
   }
-}, I = function(t, e, n) {
+}, P = function(t, e, n) {
   const i = {
     type: e,
     target: t,
@@ -55,58 +56,58 @@ const x = function(t) {
     _pD: !1,
     _sP: !1,
     _sIp: !1,
-    __proto__: R
+    __proto__: I
   };
   for (let s = t; s != null; s = s.parentNode) {
-    if (!W(s) || !f(s).listenerMap || !f(s).listenerMap[e])
+    if (!R(s) || !l(s).listenerMap || !l(s).listenerMap[e])
       continue;
     i.currentTarget = s;
-    const r = f(s).listenerMap[e];
-    for (let o = 0; o < r.length; o += 1)
-      if (r[o].call(s, i, n), i._sIp)
+    const r = l(s).listenerMap[e];
+    for (let f = 0; f < r.length; f += 1)
+      if (r[f].call(s, i, n), i._sIp)
         return;
     if (i._sP)
       return;
   }
-}, L = function(t, e) {
-  if (arguments.length == 2) {
+}, N = function(t, e, n) {
+  if (n === void 0) {
     if (typeof e == "string") return w(t)[e];
-    for (let n in e)
-      w(t)[n] = e[n];
-  } else arguments.length == 3 && (w(t)[e] = arguments[2]);
+    for (let i in e)
+      w(t)[i] = e[i];
+  } else
+    w(t)[e] = n;
   return t;
 }, g = function(t, e) {
-  const n = t;
-  for (let i in e)
-    n[i] = e[i];
-  return n;
-}, N = function(t, e) {
+  for (let n in e)
+    t[n] = e[n];
+  return t;
+}, M = function(t, e) {
   if (typeof t.splice == "function")
     for (let n = 0; n < t.length; n += 1)
       e(n, t[n]);
   else
     for (let n in t)
       e(n, t[n]);
-}, P = function(t, e) {
+}, D = function(t, e) {
   const n = [];
   for (let i = 0; i < t.length; i += 1) {
     const s = t[i];
     e(s) && n.push(s);
   }
   return n;
-}, C = function(t, e, n) {
+}, m = function(t, e, n) {
   const i = (t.getAttribute("class") || "").split(/\s+/g);
   let s = "";
   for (let r = 0; r < i.length; r += 1)
     i[r] != e && (s += " " + i[r]);
   n && (s += " " + e), t.setAttribute("class", s);
-}, M = function(t, e) {
+}, S = function(t, e) {
   const n = (t.getAttribute("class") || "").split(/\s+/g);
   for (let i = 0; i < n.length; i += 1)
     if (n[i] == e)
       return !0;
   return !1;
-}, T = function(t, e) {
+}, b = function(t, e) {
   if (t.nodeType != 1)
     return !1;
   if (!e)
@@ -117,33 +118,33 @@ const x = function(t) {
     if (s.substring(0, 1) == "#")
       throw "not supported:" + s;
     if (s.substring(0, 1) == ".") {
-      if (M(t, s.substring(1)))
+      if (S(t, s.substring(1)))
         return !0;
     } else if (t.tagName.toUpperCase() == s.toUpperCase())
       return !0;
   }
   return !1;
-}, S = new window.DOMParser(), y = function(t) {
-  const e = S.parseFromString(
+}, W = new window.DOMParser(), y = function(t) {
+  const e = W.parseFromString(
     '<div xmlns="http://www.w3.org/1999/xhtml">' + t + "</div>",
     "text/xml"
   ).firstChild, n = [];
   for (; e.firstChild; )
     n.push(e.firstChild), e.removeChild(e.firstChild);
-  return n.__proto__ = l, n;
-}, u = function(t) {
+  return n.__proto__ = u, n;
+}, o = function(t) {
   if (typeof t != "string" || t.length <= 2 || t.charAt(t.length - 2) != "p" || t.charAt(t.length - 1) != "x")
     throw "illegal px:" + t;
   return +t.substring(0, t.length - 2);
-}, D = function(t) {
+}, q = function(t) {
   let e = "";
   for (let n in t)
     e.length > 0 && (e += "&"), e += window.encodeURIComponent(n), e += "=", e += window.encodeURIComponent(t[n]);
   return e;
-}, E = function() {
+}, B = function() {
   let t = this.getResponseHeader("content-type");
-  return t != null && (t = t.replace(/\s*;.+$/, "").toLowerCase()), t == "text/xml" || t == "application/xml" ? S.parseFromString(this.responseText, "text/xml") : t == "text/json" || t == "application/json" ? JSON.parse(this.responseText) : this.response;
-}, q = function(t) {
+  return t != null && (t = t.replace(/\s*;.+$/, "").toLowerCase()), t == "text/xml" || t == "application/xml" ? W.parseFromString(this.responseText, "text/xml") : t == "text/json" || t == "application/json" ? JSON.parse(this.responseText) : this.response;
+}, E = function(t) {
   if (t = g({
     url: "",
     method: "GET",
@@ -155,12 +156,12 @@ const x = function(t) {
     throw "not supported.";
   const e = t.method.toUpperCase();
   let n = null, i = t.contentType;
-  e == "POST" || e == "PUT" ? n = typeof t.data == "object" && t.processData ? D(t.data) : t.data : i = !1;
+  e == "POST" || e == "PUT" ? n = typeof t.data == "object" && t.processData ? q(t.data) : t.data : i = !1;
   const s = t.xhr ? t.xhr() : new window.XMLHttpRequest();
-  s.open(e, t.url, t.async), i !== !1 && s.setRequestHeader("Content-Type", i), s.onreadystatechange = function() {
+  s.open(e, t.url, t.async), typeof i == "string" && s.setRequestHeader("Content-Type", i), s.onreadystatechange = function() {
     if (s.readyState == window.XMLHttpRequest.DONE)
       try {
-        s.status == 200 ? r.call(s, E.call(this)) : o.call(s);
+        s.status == 200 ? r.call(s, B.call(this)) : f.call(s);
       } finally {
         _.call(s);
       }
@@ -168,7 +169,7 @@ const x = function(t) {
     s.send(n);
   }, 0);
   let r = function(c) {
-  }, o = function() {
+  }, f = function() {
   }, _ = function() {
   };
   const p = {
@@ -176,7 +177,7 @@ const x = function(t) {
       return r = c, p;
     },
     fail: function(c) {
-      return o = c, p;
+      return f = c, p;
     },
     always: function(c) {
       return _ = c, p;
@@ -187,7 +188,7 @@ const x = function(t) {
   };
   return p;
 };
-let l = {
+let u = {
   attr: function(t) {
     if (arguments.length == 1) {
       if (typeof t == "string") return this.getAttribute(t);
@@ -212,11 +213,11 @@ let l = {
     } else arguments.length == 2 && (this.style[t] = arguments[1]);
     return this;
   },
-  data: function(t) {
-    const e = [this];
-    for (let n = 0; n < arguments.length; n += 1)
-      e.push(arguments[n]);
-    return L.apply(null, e);
+  data: function() {
+    const t = [this];
+    for (let e = 0; e < arguments.length; e += 1)
+      t.push(arguments[e]);
+    return N.apply(null, t);
   },
   val: function() {
     return arguments.length == 0 ? this.value || "" : (arguments.length == 1 && (this.value = arguments[0]), this);
@@ -224,17 +225,17 @@ let l = {
   on: function(t, e) {
     const n = t.split(/\s+/g);
     for (let i = 0; i < n.length; i += 1)
-      this.addEventListener(n[i], e), m(this, n[i], e, !0);
+      this.addEventListener(n[i], e), C(this, n[i], e, !0);
     return this;
   },
   off: function(t, e) {
     const n = t.split(/\s+/g);
     for (let i = 0; i < n.length; i += 1)
-      this.removeEventListener(n[i], e), m(this, n[i], e, !1);
+      this.removeEventListener(n[i], e), C(this, n[i], e, !1);
     return this;
   },
   trigger: function(t, e) {
-    return I(this, t, e), this;
+    return P(this, t, e), this;
   },
   offset: function() {
     const t = { left: 0, top: 0 };
@@ -272,7 +273,7 @@ let l = {
     return e.nextSibling ? e.parentNode.insertBefore(this, e.nextSibling) : e.parentNode.appendChild(this), this;
   },
   remove: function() {
-    return this.parentNode && this.parentNode.removeChild(this), x(this), this;
+    return this.parentNode && this.parentNode.removeChild(this), L(this), this;
   },
   detach: function() {
     return this.parentNode && this.parentNode.removeChild(this), this;
@@ -282,7 +283,7 @@ let l = {
   },
   closest: function(t) {
     for (let e = this; e != null; e = e.parentNode)
-      if (T(e, t))
+      if (b(e, t))
         return h(e);
     return h();
   },
@@ -290,13 +291,13 @@ let l = {
     const e = [], n = this.querySelectorAll(t);
     for (let i = 0; i < n.length; i += 1)
       e.push(n.item(i));
-    return e.__proto__ = l, e;
+    return e.__proto__ = u, e;
   },
   children: function(t) {
     const e = [], n = this.childNodes;
     for (let i = 0; i < n.length; i += 1)
-      T(n.item(i), t) && e.push(n.item(i));
-    return e.__proto__ = l, e;
+      b(n.item(i), t) && e.push(n.item(i));
+    return e.__proto__ = u, e;
   },
   index: function(t) {
     return Array.prototype.indexOf.call(
@@ -332,70 +333,62 @@ let l = {
     const e = this.offsetWidth;
     if (t) {
       const n = window.getComputedStyle(this, null);
-      return e + u(n.marginLeft) + u(n.marginRight);
+      return e + o(n.marginLeft) + o(n.marginRight);
     }
     return e;
   },
   innerWidth: function() {
     const t = window.getComputedStyle(this, null);
-    return this.offsetWidth - u(t.borderLeftWidth) - u(t.borderRightWidth);
+    return this.offsetWidth - o(t.borderLeftWidth) - o(t.borderRightWidth);
   },
   width: function() {
-    if (this == window)
-      return this.innerWidth;
-    if (this instanceof HTMLElement) {
-      const t = window.getComputedStyle(this, null);
-      return this.offsetWidth - u(t.borderLeftWidth) - u(t.borderRightWidth) - u(t.paddingLeft) - u(t.paddingRight);
-    } else
-      throw this;
+    if (this == window) return this.innerWidth;
+    const t = window.getComputedStyle(this, null);
+    return this.offsetWidth - o(t.borderLeftWidth) - o(t.borderRightWidth) - o(t.paddingLeft) - o(t.paddingRight);
   },
   outerHeight: function(t) {
     const e = this.offsetHeight;
     if (t) {
       const n = window.getComputedStyle(this, null);
-      return e + u(n.marginTop) + u(n.marginBottom);
+      return e + o(n.marginTop) + o(n.marginBottom);
     }
     return e;
   },
   innerHeight: function() {
     const t = window.getComputedStyle(this, null);
-    return this.offsetHeight - u(t.borderTopWidth) - u(t.borderBottomWidth);
+    return this.offsetHeight - o(t.borderTopWidth) - o(t.borderBottomWidth);
   },
   height: function() {
-    if (this == window)
-      return this.innerHeight;
-    if (this instanceof HTMLElement) {
-      const t = window.getComputedStyle(this, null);
-      return this.offsetHeight - u(t.borderTopWidth) - u(t.borderBottomWidth) - u(t.paddingTop) - u(t.paddingBottom);
-    } else
-      throw this;
+    if (this == window) return this.innerHeight;
+    const t = window.getComputedStyle(this, null);
+    return this.offsetHeight - o(t.borderTopWidth) - o(t.borderBottomWidth) - o(t.paddingTop) - o(t.paddingBottom);
   },
   addClass: function(t) {
-    return C(this, t, !0), this;
+    return m(this, t, !0), this;
   },
   removeClass: function(t) {
-    return C(this, t, !1), this;
+    return m(this, t, !1), this;
   },
   hasClass: function(t) {
-    return M(this, t);
+    return S(this, t);
   }
 };
-N(l, function(t, e) {
-  const n = l;
-  n[t] = function() {
-    let i = null;
-    for (let s = 0; s < this.length; s += 1) {
-      const r = this[s], o = e.apply(r, arguments);
-      if (r !== o)
-        if (o != null && o.__proto__ == l)
-          i == null && (i = []), i = i.concat(o);
+const T = u;
+M(T, function(t, e) {
+  T[t] = function() {
+    let n = null;
+    for (let i = 0; i < this.length; i += 1) {
+      const s = this[i], r = e.apply(s, arguments);
+      if (s !== r)
+        if (r != null && r.__proto__ == u)
+          n == null && (n = []), n = n.concat(r);
         else
-          return o;
+          return r;
     }
-    return i != null ? (i.__proto__ = l, i) : this;
+    return n != null ? (n.__proto__ = u, n) : this;
   };
 });
-l = g(l, {
+u = g(u, {
   each: function(t) {
     for (let e = 0; e < this.length; e += 1)
       t.call(this[e], e);
@@ -418,28 +411,21 @@ const h = function(t) {
       const e = document.querySelectorAll(t), n = [];
       for (let i = 0; i < e.length; i += 1)
         n.push(e.item(i));
-      return n.__proto__ = l, n;
+      return n.__proto__ = u, n;
     }
   } else if (typeof t == "object" && t != null) {
-    if (t.__proto__ == l)
+    if (t.__proto__ == u)
       return t;
     {
       const e = [];
-      return e.push(t), e.__proto__ = l, e;
+      return e.push(t), e.__proto__ = u, e;
     }
   } else {
     const e = [];
-    return e.__proto__ = l, e;
+    return e.__proto__ = u, e;
   }
-}, B = g(h, {
-  fn: l,
-  extend: g,
-  each: N,
-  grep: P,
-  data: L,
-  ajax: q
-});
+}, U = g(h, { fn: u, extend: g, each: M, grep: D, data: N, ajax: E });
 export {
-  B as default
+  U as default
 };
 //# sourceMappingURL=lessq.mjs.map
